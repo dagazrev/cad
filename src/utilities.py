@@ -2,6 +2,6 @@ class Utilities:
     def __init__(self):
         pass
     
-    @staticproperty
+    @staticmethod
     def loadImage(imagePath):
         pass
