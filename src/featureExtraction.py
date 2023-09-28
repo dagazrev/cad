@@ -13,3 +13,13 @@ class FeatureExtraction:
 
     def extractShapeFeatures(self, image):
         pass
+
+    def extractSizeFeatures(self, image):
+        pass
+
+    def extractKeypointFeatures(self, image):
+        pass
+
+    def excludeMask(self, image, mask):
+        pass
+    
