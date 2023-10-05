@@ -3,7 +3,7 @@ class Preprocessing:
         pass
 
     def preprocessApproach1(self, image):
-        pass
+        return image
 
     def preprocessApproach2(self, image):
         pass

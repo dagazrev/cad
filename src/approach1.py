@@ -15,13 +15,13 @@ class Approach1:
 
     def run(self):
         trainPaths, valPaths = self.utils.getImagePathsFromFolders("train", "val")
+        storePath = "features/Approach1.csv"
         for imagePath in trainPaths:
             image = self.utils.loadImage(imagePath)
-            self.plot.showImage(image)
             preprocessed = self.pre.preprocessApproach1(image)
             features = self.feat.extractFeaturesApproach1(preprocessed)
             label = self.utils.getLabel(imagePath)
-            #self.utils.store(imagePath, label, features)
+            self.utils.store(storePath,imagePath, label, features)
 
 if __name__ == "__main__":
     app1 = Approach1()

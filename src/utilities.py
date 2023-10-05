@@ -1,6 +1,7 @@
 import os
 import glob
 import cv2 
+import csv
 
 class Utilities:
     def __init__(self):
@@ -31,3 +32,18 @@ class Utilities:
         label = components[-2]
         return label
 
+    @staticmethod
+    def store(filePath, imagePath, label, features):
+        csvFile = filePath
+        fileExists = os.path.isfile(csvFile)
+
+        if features is None:
+            return
+
+        with open(csvFile, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            if not fileExists:
+                writer.writerow(['ImagePath', 'Label'] + [f"Feature_{i}" for i in range(len(features))])
+
+            for feature in features:
+                writer.writerow([imagePath, label]+ feature.tolist())
