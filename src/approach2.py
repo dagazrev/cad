@@ -24,6 +24,6 @@ class Approach2:
             #self.utils.store(imagePath, label, features)
 
 if __name__ == "__main__":
-    app1 = Approach1()
+    app1 = Approach2()
     app1.run()
 
