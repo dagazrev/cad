@@ -6,16 +6,22 @@ class Approach1:
 
     pre = Preprocessing()
     feat = FeatureExtraction()
-    util = Utilities()
+    utils = Utilities()
 
     def __init__(self):
         pass
 
     def run(self):
-        for imagePath in folders:
-            image = utils.loadImage(imagePath)
-            preprocessed = pre.preprocessApproach1(image)
-            features = feat.extractFeaturesApproach1(preprocessed)
-            label = utils.getLabel(imagePath)
-            utils.store(imagePath, label, features)
+        imagePaths = self.utils.getImagePathsFromFolders("train", "val")
+        print(len(imagePaths))
+        for imagePath in imagePaths:
+            image = self.utils.loadImage(imagePath)
+            preprocessed = self.pre.preprocessApproach1(image)
+            features = self.feat.extractFeaturesApproach1(preprocessed)
+            label = self.utils.getLabel(imagePath)
+            self.utils.store(imagePath, label, features)
+
+if __name__ == "__main__":
+    app1 = Approach1()
+    app1.run()
 
