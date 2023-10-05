@@ -6,10 +6,11 @@ class Preprocessing:
         pass
 
     def preprocessApproach1(self, image):
-        return self.hairRemoval(image)
         pass
 
     def preprocessApproach2(self, image):
+        resized = self.resize_img(image)
+        hrem = self.hairRemoval(resized)
         pass
 
     def hairRemoval(self, img):
@@ -41,4 +42,9 @@ class Preprocessing:
         inpainted_image = cv2.inpaint(img, sum_black_hats, inpaintRadius=7, flags=cv2.INPAINT_TELEA)
 
         return inpainted_image
+        pass
+    def resize_img(self,img):
+        resize_factor = 0.6
+        resized_image = cv2.resize(img, None, fx=resize_factor, fy=resize_factor, interpolation=cv2.INTER_LINEAR)
+        return resized_image
         pass
