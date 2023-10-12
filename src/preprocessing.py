@@ -7,7 +7,8 @@ class Preprocessing:
         pass
 
     def preprocessApproach1(self, image):
-        pass
+        rescaledImage = self.rescaleImage(image, scalePercent=75)
+        return rescaledImage
 
     def preprocessApproach2(self, image):
         resized = self.resize_img(image)
@@ -52,28 +53,3 @@ class Preprocessing:
         resized_image = cv2.resize(img, None, fx=resize_factor, fy=resize_factor, interpolation=cv2.INTER_LINEAR)
         return resized_image
         pass
-
-
-
-    def extract_melanoma_blob(self, original_image, k=2):
-
-        # Reshape the image to a 2D array of pixels
-        pixels = original_image.reshape((-1, 3))
-
-        pixels = np.float32(pixels)
-
-        # Apply K-Means clustering
-        criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)
-        _, labels, centers = cv2.kmeans(pixels, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-
-        # Find the label that corresponds to the melanoma (largest cluster)
-        unique_labels, label_counts = np.unique(labels, return_counts=True)
-        melanoma_label = unique_labels[np.argmax(label_counts)]
-
-        # Create a mask for the melanoma cluster
-        mask = (labels == melanoma_label).reshape(original_image.shape[:2])
-
-        # Apply the mask to the original image
-        result_image = cv2.bitwise_and(original_image, original_image, mask=cv2.bitwise_not(mask.astype(np.uint8)*255))
-        return result_image, mask
-
