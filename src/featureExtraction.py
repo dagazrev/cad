@@ -1,8 +1,17 @@
 import numpy as np
-import cv2 as cv
+import cv2
+import pandas as pd
 from skimage import feature
 from skimage.feature import graycomatrix, graycoprops, local_binary_pattern
+
+from skimage.filters import gabor
+from skimage import img_as_ubyte
 import csv
+
+
+
+
+
 
 class FeatureExtraction:
     def __init__(self):
@@ -12,7 +21,7 @@ class FeatureExtraction:
         
         pass
 
-    def extractFeaturesApproach2(self, image):
+    def extractFeaturesApproach2(self, image, mask):
         pass
 
     def extractColorFeatures(self, image):
@@ -95,6 +104,17 @@ class FeatureExtraction:
         glcm_normalized = glcm / np.sum(glcm)
         difference_entropy = -np.sum(glcm_normalized * np.log2(glcm_normalized + 1e-10))
         return difference_entropy
+    
+    def extract_gabor_features(self, image, mask):
+            features = []
+            num_orientations = 8
+            frequency = 0.6
+            theta_values = np.arange(0, np.pi, np.pi / num_orientations)
+            for theta in theta_values:
+                gabor_image, _ = gabor(image, frequency=frequency, theta=theta)
+                gabor_features = np.mean(gabor_image[mask == 255]), np.std(gabor_image[mask == 255])
+                features.extend(gabor_features)
+            return features
         
     def extract_glcm_features(self,roi):
         gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
@@ -145,3 +165,39 @@ class FeatureExtraction:
         # print(features)
 
         return features
+    
+    def color_features(self, image, mask):
+        maskb = cv2.bitwise_not(mask.astype(np.uint8)*255)
+        # Ensure the mask is binary (values 0 and 255)
+        maskc = cv2.threshold(maskb, 128, 255, cv2.THRESH_BINARY)[1]
+        
+
+        # Extract texture features
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        lbp_image = local_binary_pattern(gray_image, P=8, R=1, method='uniform')
+        lbp_hist = np.histogram(lbp_image[maskc == 255], bins=np.arange(0, 60, 1))
+        # Extract color features
+
+        masked_image = cv2.bitwise_and(image, image, mask=maskb)
+        mean_color = list(cv2.mean(masked_image))
+
+        # Extract shape features
+        contours, _ = cv2.findContours(maskc, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        largest_contour = max(contours, key=cv2.contourArea)
+        perimeter = cv2.arcLength(largest_contour, closed=True)
+        area = cv2.contourArea(largest_contour)
+        circularity = 4 * np.pi * area / (perimeter ** 2)
+
+        
+
+        gabor_features = self.extract_gabor_features(gray_image, mask)
+
+        # Combine all features into a list
+        all_features = lbp_hist[0].tolist() + mean_color + [area, perimeter, circularity] 
+
+        # Save features to a CSV file
+        output_file = 'features.csv'
+        with open(output_file, 'a') as f:  # Open the file in 'append' mode to add new lines
+            f.write(','.join(map(str, all_features)) + '\n')
+
+        print(f"Features saved to {output_file}")
