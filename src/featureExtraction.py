@@ -138,7 +138,7 @@ class FeatureExtraction:
             return features
         
     def extract_glcm_features(self,roi):
-        gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
         # Param:
         # source image
         # List of pixel pair distance offsets - here 1 in each direction

@@ -52,9 +52,8 @@ class Preprocessing:
         resize_factor = 0.6
         resized_image = cv2.resize(img, None, fx=resize_factor, fy=resize_factor, interpolation=cv2.INTER_LINEAR)
         return resized_image
-        pass
 
-        def extract_melanoma_blob(self, original_image, k=2):
+    def extract_melanoma_blob(self, original_image, k=2):
 
         # Reshape the image to a 2D array of pixels
         pixels = original_image.reshape((-1, 3))
