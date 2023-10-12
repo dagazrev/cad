@@ -54,7 +54,7 @@ class Preprocessing:
         return resized_image
         pass
 
-        def extract_melanoma_blob(self, original_image, k=2):
+def extract_melanoma_blob(self, original_image, k=2):
 
         # Reshape the image to a 2D array of pixels
         pixels = original_image.reshape((-1, 3))
@@ -74,4 +74,4 @@ class Preprocessing:
 
         # Apply the mask to the original image
         result_image = cv2.bitwise_and(original_image, original_image, mask=cv2.bitwise_not(mask.astype(np.uint8)*255))
-        return result_image, mask
+        return result_image, mask        
