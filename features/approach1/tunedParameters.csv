@@ -1,0 +1,4 @@
+pipeline,Classifier,Best Parameters,Best Score,Fold Scores,standard deviation
+"Pipeline(steps=[('outlierTransformer', ZScoreTransformer()),
+                ('scaler', QuantileTransformer(n_quantiles=100)),
+                ('classifier', RandomForestClassifier())])",RandomForestClassifier(),"{'classifier__max_depth': 50, 'classifier__min_samples_leaf': 1, 'classifier__min_samples_split': 2, 'classifier__n_estimators': 100}",0.7450797954439554,"[0.7416913458374466, 0.7591312931885489, 0.7370845672918723, 0.739302172481896, 0.7481895984200132]",0.007948605594035239
