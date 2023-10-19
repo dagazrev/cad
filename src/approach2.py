@@ -16,8 +16,8 @@ class Approach2:
         pass
 
     def run(self):
-        trainPaths, valPaths = self.utils.getImagePathsFromFolders("train", "val")
-        for imagePath in trainPaths[:7724]:
+        trainPaths, valPaths = self.utils.getImagePathsFromFoldersNb("train_nb", "val_nb")
+        for imagePath in valPaths[1175:]:
             image = self.utils.loadImage(imagePath)
             #self.plot.showImage(image)
             preprocessed, mask = self.pre.preprocessApproach2(image)

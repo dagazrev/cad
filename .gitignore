@@ -1,3 +1,5 @@
 /train
 /val
+/train_nb
+/val_nb
 /src/__pycache__

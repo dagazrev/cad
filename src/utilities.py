@@ -20,6 +20,22 @@ class Utilities:
         othersPaths = [os.path.join(othersFolder, file) for file in os.listdir(othersFolder)]
         imagePaths = [*nevusPaths, *othersPaths]
         return imagePaths
+    
+    def getImagePathsFromFoldersNb(self, trainFolder, valFolder):
+        trainPaths = self.getRelativePathsNb(trainFolder)
+        valPaths = self.getRelativePathsNb(valFolder)
+        return trainPaths, valPaths
+    
+    @staticmethod
+    def getRelativePathsNb(folderPath):
+        bccFolder = os.path.join(folderPath, "bcc")
+        melFolder = os.path.join(folderPath, "mel")
+        sccFolder = os.path.join(folderPath, "scc")
+        bccPaths = [os.path.join(bccFolder, file) for file in os.listdir(bccFolder)]
+        melPaths = [os.path.join(melFolder, file) for file in os.listdir(melFolder)]
+        sccPaths = [os.path.join(sccFolder, file) for file in os.listdir(sccFolder)]
+        imagePaths = [*bccPaths, *melPaths, *sccPaths]
+        return imagePaths
 
     @staticmethod
     def loadImage(imagePath):
