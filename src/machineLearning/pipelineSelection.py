@@ -26,15 +26,35 @@ from sklearn.metrics import accuracy_score
 # outliers
 from outlierDetection import IQRTransformer, ZScoreTransformer, ModifiedZScoreTransformer
 
+# data loader
+from dataLoader import DataLoader
+
 
 class PipelineSelection:
-    def __init__(self):
-        paramGrid = self.createPipelinesAsParameterGrid()
+    def __init__(self, approachName):
+        self.resultsDirectory = "features/" + approachName + "/"
+        self.crossValidation = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
+    def selectPipleline(self, features, labels):
+        paramGrid = self.createPipelinesAsParameterGrid()
+        pipeline = self.createEmptyPipeline()
+
+        selectedFeatures, selectedFeatureNames = self.selectFeatures(features, labels)
+        self.storeSelectedFeatures(selectedFeatureNames)
+
+        ## Perform the grid search 
+        gridSearch = GridSearchCV(pipeline, paramGrid, scoring="accuracy", cv=self.crossValidation, n_jobs=-1, error_score="raise")
+        gridSearch.fit(selectedFeatures, labels)
+
+        self.storeResultsOf(gridSearch)
+        print(f"results computed")
+        return 0
+
+    @staticmethod
     def createPipelinesAsParameterGrid():
         outlierTransformers = [
-            IQRTransformer()
-            ZScoreTransformer()
+            IQRTransformer(),
+            ZScoreTransformer(),
             ModifiedZScoreTransformer()
         ]
 
@@ -45,10 +65,6 @@ class PipelineSelection:
             MinMaxScaler(),
             MaxAbsScaler(),
             QuantileTransformer(n_quantiles=100), 
-        ]
-
-        selectors = [
-            RandomForestClassifier(min_samples_leaf=4, criterion="entropy", n_estimators=400)
         ]
         
         classifiers = [
@@ -68,47 +84,43 @@ class PipelineSelection:
 
         return paramGrid
 
-    def evaluate(features, labels):
-        cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-        
+    @staticmethod
+    def createEmptyPipeline():
+        pipeline = Pipeline([
+            ("outlier_Transformer", None),
+            ("scaler", None),
+            ("classifier", None),
+        ])
+        return pipeline
+
+    def selectFeatures(self, features, labels):
+        rfeEstimator = RandomForestClassifier(min_samples_leaf=4, criterion="entropy", n_estimators=100)
+        rfecv = RFECV(estimator=rfeEstimator, cv=self.crossValidation, n_jobs=-1)
+        rfecv.fit(features, labels)
+        selectedFeatureNames = features.columns[rfecv.support_]
+        selectedFeatures = features[selectedFeatureNames]
+        return selectedFeatures, selectedFeatureNames
+
+    def storeSelectedFeatures(self, selectedFeatureNames):
+        featureResultPath = os.path.join(self.resultsDirectory, "selectedFeatures.csv")
+        _ = pd.DataFrame(selectedFeatureNames, columns=["selectedFeatures"]).to_csv(featureResultPath, index=False)
+        print(f"selected feature Names have been stored in {featureResultPath}")
+        return 0
+
+    def storeResultsOf(self, gridSearch):
+        resultsFilePath = os.path.join(self.resultsDirectory, "pipelineSelection.csv")
+        results = pd.DataFrame(gridSearch.cv_results_)
+        results.to_csv(resultsFilePath, index=False)
+        return 0
+
 
 
 if __name__ == "__main__":
-    folderPath = "./results"
-    for fileNumber in ["01", "02", "03", "04", "09", "10"]:
-        for wantedDataset in ["full", "air","paper"]:
-            fileName = f"AllF_T{fileNumber}.csv"
-            dataset = loadDataset(fileName, wantedDataset)
-            encodedFeatures, encodedLabels = encode(dataset)
-            cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    approachName = "approach1"
+    datasetPath = "features/approach1/dataset.csv"
 
-            # select features
-            rfeEstimator = RandomForestClassifier(min_samples_leaf=4, criterion="entropy", n_estimators=400)
-            rfecv = RFECV(estimator=rfeEstimator, cv=cv, n_jobs=-1)
-            rfecv.fit(encodedFeatures, encodedLabels)
-            selectedFeatures = encodedFeatures.columns[rfecv.support_]
-            reducedFeatures = encodedFeatures[selectedFeatures]
+    loader = DataLoader()
+    selector = PipelineSelection(approachName)
 
-            # store results
-            featureResultPath = os.path.join(folderPath, f"feature_selection_task{fileNumber}_{wantedDataset}_dataset.csv")
-            _ = pd.DataFrame(selectedFeatures, columns=["selectedFeatures"]).to_csv(featureResultPath, index=False)
-            print(f"features for {wantedDataset} dataset from task {fileNumber} selected")
-
-            # pipeline selection ,(not for hyperparameter tuning)
-            paramGrid = createPipelinesAsParameterGrid()
-
-            # Create the pipeline
-            pipeline = Pipeline([
-                ("outlier_Transformer", None),
-                ("scaler", None),
-                ("classifier", None),
-            ])
-
-            # Perform the grid search 
-            gridSearch = GridSearchCV(pipeline, paramGrid, scoring="accuracy", cv=cv, n_jobs=-1, error_score="raise")
-            gridSearch.fit(reducedFeatures, encodedLabels)
-
-            resultPath = os.path.join(folderPath, f"grid_search_results_task{fileNumber}_{wantedDataset}_dataset.csv")
-            results = pd.DataFrame(gridSearch.cv_results_)
-            results.to_csv(resultPath, index=False)
-            print(f"results for {wantedDataset} dataset from task {fileNumber} computed")
+    features, labels = loader.loadSplitDataset(datasetPath, header=0, labelIdentifier=-1)
+    selector.selectPipleline(features, labels)
