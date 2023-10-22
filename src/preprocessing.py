@@ -7,7 +7,7 @@ class Preprocessing:
         pass
 
     def preprocessApproach1(self, image):
-        rescaledImage = self.rescaleImage(image, scalePercent=75)
+        rescaledImage = self.resize_img(image)
         return rescaledImage
 
     def preprocessApproach2(self, image):
@@ -45,7 +45,6 @@ class Preprocessing:
         inpainted_image = cv2.inpaint(img, sum_black_hats, inpaintRadius=15, flags=cv2.INPAINT_TELEA)
 
         return inpainted_image
-        pass
 
 
     def resize_img(self,img):

@@ -61,5 +61,4 @@ class Utilities:
             if not fileExists:
                 writer.writerow(['ImagePath', 'Label'] + [f"Feature_{i}" for i in range(len(features))])
 
-            for feature in features:
-                writer.writerow([imagePath, label]+ feature.tolist())
+            writer.writerow([imagePath, label] + [str(feature) for feature in features])

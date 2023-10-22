@@ -18,8 +18,12 @@ class FeatureExtraction:
         pass
 
     def extractFeaturesApproach1(self, image):
-        
-        pass
+        mask = np.full(image.shape, 255)
+        glcmFeatures = self.extract_glcm_features(image)
+        lbpFeatures = self.extractLBPFeatures(image, mask)
+        histFeatures = self.extract3DHistogram(image, mask)
+        features = np.concatenate([glcmFeatures, lbpFeatures, histFeatures])
+        return features
 
     def extractFeaturesApproach2(self, image, mask):
         pass
@@ -33,23 +37,6 @@ class FeatureExtraction:
     def extractSizeFeatures(self, image):
         pass
     
-    @staticmethod
-    def CompletedRobustLocalBinaryPattern(image, radius=1, neighbors=8):
-        lbp = feature.local_binary_pattern(image, neighbors, radius, method='uniform')
-        crlbp_result = np.zeros((lbp.shape[0]-2, lbp.shape[1]-2))
-
-        for i in range(1, lbp.shape[0]-1):
-            for j in range(1, lbp.shape[1]-1):
-                center = lbp[i, j]
-                neighbors = [lbp[i-1, j-1], lbp[i-1, j], lbp[i-1, j+1], lbp[i, j+1],
-                            lbp[i+1, j+1], lbp[i+1, j], lbp[i+1, j-1], lbp[i, j-1]]
-
-                # Check for the condition of CRLBP
-                if (max(neighbors) - min(neighbors)) <= 2:
-                    crlbp_result[i-1, j-1] = max(neighbors) - min(neighbors)
-
-        return crlbp_result
-
 
     @staticmethod
     def extractKeypointFeatures(image):
@@ -186,7 +173,22 @@ class FeatureExtraction:
         # print(features)
 
         return features
-    
+
+    @staticmethod
+    def extractLBPFeatures(image, mask):
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        lbp_image = local_binary_pattern(gray_image, P=8, R=1, method='uniform')
+        lbp_hist = np.histogram(lbp_image, bins=int(lbp_image.max()+1))
+        return lbp_hist[0]
+
+    def extract3DHistogram(self, image, mask):
+        channels = [0, 1, 2]
+        bins = [3, 3, 3]
+        ranges = [0, 256, 0, 256, 0, 256]
+        bgr_histogram = cv2.calcHist([image], channels, None, bins, ranges)
+        features = bgr_histogram.flatten()
+        return features
+
     def color_features(self, image, mask):
         maskb = cv2.bitwise_not(mask.astype(np.uint8)*255)
         # Ensure the mask is binary (values 0 and 255)

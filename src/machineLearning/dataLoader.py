@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 class DataLoader:
     def __init__(self):
@@ -7,6 +8,9 @@ class DataLoader:
     def loadSplitDataset(self, pathToCSV, header, labelIdentifier):
         dataset = self.loadDataset(pathToCSV, header)
         features, labels = self.splitData(dataset, labelIdentifier)
+        features = features.drop(["ImagePath"], axis=1)
+        if isinstance(labels[1], str):
+            labels = self.encodeLabels(labels)
         return features, labels
 
     @staticmethod
@@ -35,7 +39,7 @@ class DataLoader:
         return features, labels   
 
     @staticmethod
-    def encodelabels(labels):
+    def encodeLabels(labels):
         labelEncoder = LabelEncoder()
         encodedLabels = labelEncoder.fit_transform(labels)
         return encodedLabels

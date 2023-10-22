@@ -15,7 +15,7 @@ class Approach1:
 
     def run(self):
         trainPaths, valPaths = self.utils.getImagePathsFromFolders("train", "val")
-        storePath = "features/Approach1.csv"
+        storePath = "features/approach1/dataset.csv"
         for imagePath in trainPaths:
             image = self.utils.loadImage(imagePath)
             preprocessed = self.pre.preprocessApproach1(image)

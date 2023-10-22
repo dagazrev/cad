@@ -122,5 +122,5 @@ if __name__ == "__main__":
     loader = DataLoader()
     selector = PipelineSelection(approachName)
 
-    features, labels = loader.loadSplitDataset(datasetPath, header=0, labelIdentifier=-1)
+    features, labels = loader.loadSplitDataset(datasetPath, header=0, labelIdentifier="Label")
     selector.selectPipleline(features, labels)
