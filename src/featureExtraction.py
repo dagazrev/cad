@@ -188,12 +188,23 @@ class FeatureExtraction:
         bgr_histogram = cv2.calcHist([image], channels, None, bins, ranges)
         features = bgr_histogram.flatten()
         return features
+    
+    def shape_features(self, mask):
+        maskb = cv2.bitwise_not(mask.astype(np.uint8)*255)
+        maskc = cv2.threshold(maskb, 128, 255, cv2.THRESH_BINARY)[1]
+        # Extract shape features
+        contours, _ = cv2.findContours(maskc, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        largest_contour = max(contours, key=cv2.contourArea)
+        perimeter = cv2.arcLength(largest_contour, closed=True)
+        area = cv2.contourArea(largest_contour)
+        circularity = 4 * np.pi * area / (perimeter ** 2)
+
+        return area, perimeter, circularity
+
 
     def color_features(self, image, mask):
         maskb = cv2.bitwise_not(mask.astype(np.uint8)*255)
-        # Ensure the mask is binary (values 0 and 255)
-        maskc = cv2.threshold(maskb, 128, 255, cv2.THRESH_BINARY)[1]
-        
+        # Ensure the mask is binary (values 0 and 255)        
 
         # Extract texture features
         gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -204,14 +215,7 @@ class FeatureExtraction:
         masked_image = cv2.bitwise_and(image, image, mask=maskb)
         mean_color = list(cv2.mean(masked_image))
 
-        # Extract shape features
-        contours, _ = cv2.findContours(maskc, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        largest_contour = max(contours, key=cv2.contourArea)
-        perimeter = cv2.arcLength(largest_contour, closed=True)
-        area = cv2.contourArea(largest_contour)
-        circularity = 4 * np.pi * area / (perimeter ** 2)
-
-        
+        area, perimeter, circularity = self.shape_features(maskb)        
 
         gabor_features = self.extract_gabor_features(gray_image, mask)
 
@@ -224,3 +228,12 @@ class FeatureExtraction:
             f.write(','.join(map(str, all_features)) + '\n')
 
         print(f"Features saved to {output_file}")
+
+    def extractFeaturesApproach25(self, image, mask):
+
+        glcmFeatures = self.extract_glcm_features(image.astype(np.uint8))
+        lbpFeatures = self.extractLBPFeatures(image, mask)
+        histFeatures = self.extract3DHistogram(image, mask)
+        area, perimeter, circularity = self.shape_features(mask)
+        features = np.concatenate([glcmFeatures, lbpFeatures, histFeatures, [area, perimeter, circularity]])
+        return features

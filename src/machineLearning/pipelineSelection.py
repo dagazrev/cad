@@ -116,8 +116,8 @@ class PipelineSelection:
 
 
 if __name__ == "__main__":
-    approachName = "approach1"
-    datasetPath = "features/approach1/dataset.csv"
+    approachName = "approach25"
+    datasetPath = "features/approach25/features.csv"
 
     loader = DataLoader()
     selector = PipelineSelection(approachName)
