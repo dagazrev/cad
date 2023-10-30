@@ -28,24 +28,19 @@ class FeatureExtraction:
     def extractFeaturesApproach2(self, image, mask):
         pass
 
-    def extractColorFeatures(self, image):
-        pass
-
-    def extractShapeFeatures(self, image):
-        pass
-
-    def extractSizeFeatures(self, image):
-        pass
-    
+    def extractFeaturesApproach25(self, image, mask):
+        glcmFeatures = self.extract_glcm_features(image.astype(np.uint8))
+        lbpFeatures = self.extractLBPFeatures(image, mask)
+        histFeatures = self.extract3DHistogram(image, mask)
+        area, perimeter, circularity = self.shape_features(mask)
+        features = np.concatenate([glcmFeatures, lbpFeatures, histFeatures, [area, perimeter, circularity]])
+        return features
 
     @staticmethod
     def extractKeypointFeatures(image):
         sift = cv2.SIFT_create()
         keypoints, descriptors = sift.detectAndCompute(image, None)
         return descriptors
-
-    def excludeMask(self, image, mask):
-        pass
 
     def calculate_cluster_prominence(self,glcm):
         # Calculate cluster prominence
@@ -229,11 +224,3 @@ class FeatureExtraction:
 
         print(f"Features saved to {output_file}")
 
-    def extractFeaturesApproach25(self, image, mask):
-
-        glcmFeatures = self.extract_glcm_features(image.astype(np.uint8))
-        lbpFeatures = self.extractLBPFeatures(image, mask)
-        histFeatures = self.extract3DHistogram(image, mask)
-        area, perimeter, circularity = self.shape_features(mask)
-        features = np.concatenate([glcmFeatures, lbpFeatures, histFeatures, [area, perimeter, circularity]])
-        return features
