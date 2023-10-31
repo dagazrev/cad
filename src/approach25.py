@@ -14,8 +14,8 @@ class Approach25:
         pass
 
     def run(self):
-        trainPaths, valPaths = self.utils.getImagePathsFromFolders("train", "val")
-        storePath = "features/approach25/eval.csv"
+        trainPaths, valPaths = self.utils.getImagePathsFromFoldersNb("train_nb", "val_nb")
+        storePath = "features/approach25/non_binary_val.csv"
         for imagePath in valPaths:
             image = self.utils.loadImage(imagePath)
             preprocessed, mask = self.pre.preprocessApproach25(image)
