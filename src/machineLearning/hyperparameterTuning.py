@@ -246,5 +246,5 @@ if __name__ == "__main__":
     loader = DataLoader()
     tuner = HyperparameterTuner(approachName)
 
-    features, labels = loader.loadSplitDataset(datasetPath, header=0, labelIdentifier=-1)
+    features, labels = loader.loadSplitDataset(datasetPath, header=0, labelIdentifier=1)
     tuner.tuneHyperparameters(features, labels)
