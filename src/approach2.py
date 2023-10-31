@@ -23,10 +23,10 @@ class Approach2:
             preprocessed, mask = self.pre.preprocessApproach2(image)
             features = self.feat.color_features(preprocessed, mask)
             label = self.utils.getLabel(imagePath)
-            #self.utils.store(imagePath, label, features)
+            self.utils.store(imagePath, label, features)
             # Display the original and segmented images
-            cv2.imshow('Original Image', image)
-            cv2.imshow('Segmented Image', preprocessed)
+            #cv2.imshow('Original Image', image)
+            #cv2.imshow('Segmented Image', preprocessed)
 
             # Wait for a key press and then close the windows
             cv2.waitKey(0)

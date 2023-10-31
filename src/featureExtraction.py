@@ -8,11 +8,6 @@ from skimage.filters import gabor
 from skimage import img_as_ubyte
 import csv
 
-
-
-
-
-
 class FeatureExtraction:
     def __init__(self):
         pass
@@ -26,7 +21,8 @@ class FeatureExtraction:
         return features
 
     def extractFeaturesApproach2(self, image, mask):
-        pass
+        features = self.color_features(image, mask)
+        return features
 
     def extractFeaturesApproach25(self, image, mask):
         glcmFeatures = self.extract_glcm_features(image.astype(np.uint8))
@@ -199,14 +195,14 @@ class FeatureExtraction:
 
     def color_features(self, image, mask):
         maskb = cv2.bitwise_not(mask.astype(np.uint8)*255)
-        # Ensure the mask is binary (values 0 and 255)        
+        maskc = cv2.threshold(maskb, 128, 255, cv2.THRESH_BINARY)[1]        
 
         # Extract texture features
         gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         lbp_image = local_binary_pattern(gray_image, P=8, R=1, method='uniform')
         lbp_hist = np.histogram(lbp_image[maskc == 255], bins=np.arange(0, 60, 1))
-        # Extract color features
 
+        # Extract color features
         masked_image = cv2.bitwise_and(image, image, mask=maskb)
         mean_color = list(cv2.mean(masked_image))
 
@@ -217,10 +213,5 @@ class FeatureExtraction:
         # Combine all features into a list
         all_features = lbp_hist[0].tolist() + mean_color + [area, perimeter, circularity] 
 
-        # Save features to a CSV file
-        output_file = 'features.csv'
-        with open(output_file, 'a') as f:  # Open the file in 'append' mode to add new lines
-            f.write(','.join(map(str, all_features)) + '\n')
-
-        print(f"Features saved to {output_file}")
+        return all_features
 
