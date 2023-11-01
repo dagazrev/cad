@@ -3,3 +3,5 @@
 /train_nb
 /val_nb
 /src/__pycache__
+/src/machineLearning/__pycache__
+/testX

@@ -40,6 +40,5 @@ class DataLoader:
 
     @staticmethod
     def encodeLabels(labels):
-        labelEncoder = LabelEncoder()
-        encodedLabels = labelEncoder.fit_transform(labels)
-        return encodedLabels
+        labels = labels.replace({'nevus': 0, 'others': 1})
+        return labels
