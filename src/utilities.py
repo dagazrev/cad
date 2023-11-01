@@ -30,7 +30,7 @@ class Utilities:
         testPaths = self.getRelativePathsTest(testFolder)
         return testPaths
     
-    def getRelativePathsTest(folderPath):
+    def getRelativePathsTest(self,folderPath):
         testFolder = os.path.join(folderPath, "test")
         testPaths = [os.path.join(testFolder, file) for file in os.listdir(testFolder)]
         imagePaths = [*testPaths]

@@ -1,0 +1,5 @@
+Classifier,Best Parameters
+"RandomForestClassifier(class_weight={0: 0.62, 1: 0.89, 2: 4.5}, max_depth=10,
+                       n_estimators=500)","{'classifier__max_depth': 10, 'classifier__n_estimators': 500}"
+"GradientBoostingClassifier(max_depth=10, n_estimators=200)","{'classifier__max_depth': 10, 'classifier__n_estimators': 200}"
+LinearDiscriminantAnalysis(),{}

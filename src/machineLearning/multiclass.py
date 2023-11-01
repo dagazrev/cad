@@ -33,6 +33,8 @@ class multiclass:
         self.datasetFile = filename
         self.evalsetFile = evalname
 
+        self.approachName = approachName
+
         self.class_weights = {0: 0.62, 1: 0.89, 2: 4.5}
 
 
@@ -140,7 +142,7 @@ class multiclass:
             tuned_classifiers.append(best_classifier)
             best_parameters.append(best_params)
         print(tuned_classifiers, best_parameters)
-        output_csv_file = 'tuned_classifiers.csv'
+        output_csv_file = "features/"+self.approachName+'tuned_classifiers.csv'
         df = pd.DataFrame({'Classifier': tuned_classifiers, 'Best Parameters': best_parameters})
         df.to_csv(output_csv_file, index=False)
         return tuned_classifiers[0], best_parameters[0]
