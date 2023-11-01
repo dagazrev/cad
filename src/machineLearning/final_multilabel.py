@@ -17,11 +17,8 @@ class final_multilabel:
         self.labels = self.train['Label']
         self.test_data = self.test.iloc[:, 2:]
 
-        # Train a GradientBoostingClassifier
         classifier = GradientBoostingClassifier(max_depth=10, n_estimators=200)
         classifier.fit(self.features, self.labels)
-
-        # Predict classes for the test data
         predicted_classes = classifier.predict(self.test_data)
 
         # Save the predicted classes to a CSV file without a header
