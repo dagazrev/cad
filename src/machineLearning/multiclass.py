@@ -209,9 +209,9 @@ class multiclass:
     
 
 if __name__ == "__main__":
-    approachName = "approach25"
-    filename = "features/approach25/non_binary.csv"
-    evalname = "features/approach25/non_binary_val.csv"
+    approachName = "approach2"
+    filename = "features/approach2/merged_features_nb.csv"
+    evalname = "features/approach2/merged_features_nb_val.csv"
 
     multiclass_instance = multiclass(approachName,filename,evalname)
 
