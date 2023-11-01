@@ -14,14 +14,21 @@ class Approach1:
         pass
 
     def run(self):
-        trainPaths, valPaths = self.utils.getImagePathsFromFolders("train", "val")
-        storePath = "features/approach1/dataset.csv"
+        trainPaths, valPaths = self.utils.getImagePathsFromFoldersNb("train_nb", "val_nb")
+        storePath = "features/approach1/non_binary.csv"
+        storePath2 = "features/approach1/non_binary_val.csv"
         for imagePath in trainPaths:
             image = self.utils.loadImage(imagePath)
             preprocessed = self.pre.preprocessApproach1(image)
             features = self.feat.extractFeaturesApproach1(preprocessed)
             label = self.utils.getLabel(imagePath)
             self.utils.store(storePath,imagePath, label, features)
+        for imagePath in valPaths:
+            image = self.utils.loadImage(imagePath)
+            preprocessed = self.pre.preprocessApproach1(image)
+            features = self.feat.extractFeaturesApproach1(preprocessed)
+            label = self.utils.getLabel(imagePath)
+            self.utils.store(storePath2,imagePath, label, features)
 
 if __name__ == "__main__":
     app1 = Approach1()

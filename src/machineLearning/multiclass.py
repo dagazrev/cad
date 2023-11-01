@@ -1,4 +1,5 @@
 import os
+import csv
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
@@ -60,15 +61,15 @@ class multiclass:
 
     def evaluate_classifiers(self):
         scaler = StandardScaler()
-        scaled_features = scaler.fit_transform(self.selected_features)
-
+        scaled_features = scaler.fit_transform(self.features)
+        class_weights = {0: 0.62, 1: 0.89, 2: 4.5}
         # Define a list of classifiers with default parameters
         classifiers = [
             ("GradientBoosting", GradientBoostingClassifier(random_state=42)),
             ("LinearDiscriminantAnalysis", LinearDiscriminantAnalysis()),
-            ("RandomForest", RandomForestClassifier(random_state=42)),
-            ("SVC", SVC(probability=True, random_state=42)),
-            ("LogisticRegression", LogisticRegression(random_state=42))
+            ("RandomForest", RandomForestClassifier(random_state=42, class_weight=class_weights)),
+            ("SVC", SVC(probability=True, random_state=42, class_weight=class_weights)),
+            ("LogisticRegression", LogisticRegression(random_state=42, class_weight=class_weights, multi_class="ovr"))
         ]
 
         top_classifiers = []
@@ -109,15 +110,15 @@ class multiclass:
                 }),
                 "LinearDiscriminantAnalysis": (LinearDiscriminantAnalysis(), {
                 }),
-                "RandomForest": (RandomForestClassifier(), {
+                "RandomForest": (RandomForestClassifier(class_weight=class_weights), {
                     'classifier__n_estimators': [100, 200, 400, 500],  # Adjust parameters as needed
                     'classifier__max_depth': [None, 10, 20],
                 }),
-                "SVC": (SVC(), {
+                "SVC": (SVC(class_weight=class_weights), {
                     'classifier__C': [1, 0.1],  # Adjust parameters as needed
                     'classifier__kernel': ['linear', 'rbf', 'poly'],
                 }),
-                "LogisticRegression": (LogisticRegression(), {
+                "LogisticRegression": (LogisticRegression(class_weight=class_weights), {
                 })
             }
 
@@ -130,28 +131,31 @@ class multiclass:
             ])
 
             # using experimental grid search
-            grid = HalvingGridSearchCV(pipeline, param_grid, scoring=kappa_scorer, cv=5)
-            grid.fit(self.selected_features, self.labels)
+            grid = HalvingGridSearchCV(pipeline, param_grid, scoring=kappa_scorer, cv=5,verbose=15)
+            grid.fit(self.features, self.labels)
 
             best_classifier = grid.best_estimator_.named_steps['classifier']
             best_params = grid.best_params_
 
             tuned_classifiers.append(best_classifier)
             best_parameters.append(best_params)
-        
-        return tuned_classifiers, best_parameters
+        print(tuned_classifiers, best_parameters)
+        output_csv_file = 'tuned_classifiers.csv'
+        df = pd.DataFrame({'Classifier': tuned_classifiers, 'Best Parameters': best_parameters})
+        df.to_csv(output_csv_file, index=False)
+        return tuned_classifiers[0], best_parameters[0]
 
     
     def evaluate_classifier(self, classifier, params):
         scaler = StandardScaler()
         pipeline = Pipeline([
             ('scaler', scaler),
-            ('classifier', classifier.set_params(**params))
+            ('classifier', classifier)
         ])
 
-        pipeline.fit(self.selected_features, self.labels)
+        pipeline.fit(self.features, self.labels)
 
-        predictions = pipeline.predict(self.selected_evalfeatures)
+        predictions = pipeline.predict(self.evalfeatures)
 
         #Evaluation metrics
         accuracy = accuracy_score(self.evalLabels, predictions)
@@ -160,7 +164,7 @@ class multiclass:
         recall = recall_score(self.evalLabels, predictions, average='weighted')
 
         #Calculate ROC curve and AUC for each class
-        y_score = pipeline.predict_proba(self.selected_features)
+        y_score = pipeline.predict_proba(self.evalfeatures)
         n_classes = len(np.unique(self.evalLabels))
         fpr = {}
         tpr = {}

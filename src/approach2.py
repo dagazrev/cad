@@ -16,21 +16,29 @@ class Approach2:
         pass
 
     def run(self):
-        trainPaths, valPaths = self.utils.getImagePathsFromFolders("train", "val")
+        trainPaths, valPaths = self.utils.getImagePathsFromFoldersNb("train_nb", "val_nb")
+        storePath = "features/approach2/non_binary.csv"
+        storePath2 = "features/approach2/non_binary_val.csv"
         for imagePath in trainPaths:
             image = self.utils.loadImage(imagePath)
             #self.plot.showImage(image)
             preprocessed, mask = self.pre.preprocessApproach2(image)
             features = self.feat.color_features(preprocessed, mask)
             label = self.utils.getLabel(imagePath)
-            self.utils.store(imagePath, label, features)
+            self.utils.store(storePath,imagePath, label, features)
             # Display the original and segmented images
             #cv2.imshow('Original Image', image)
             #cv2.imshow('Segmented Image', preprocessed)
 
             # Wait for a key press and then close the windows
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+            #cv2.waitKey(0)
+            #cv2.destroyAllWindows()
+        for imagePath in valPaths:
+            image = self.utils.loadImage(imagePath)
+            preprocessed, mask = self.pre.preprocessApproach2(image)
+            features = self.feat.color_features(preprocessed, mask)
+            label = self.utils.getLabel(imagePath)
+            self.utils.store(storePath2,imagePath, label, features)
 
 
 

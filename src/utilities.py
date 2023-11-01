@@ -26,6 +26,16 @@ class Utilities:
         valPaths = self.getRelativePathsNb(valFolder)
         return trainPaths, valPaths
     
+    def getImagePathsFromTest(self, testFolder):
+        testPaths = self.getRelativePathsTest(testFolder)
+        return testPaths
+    
+    def getRelativePathsTest(folderPath):
+        testFolder = os.path.join(folderPath, "test")
+        testPaths = [os.path.join(testFolder, file) for file in os.listdir(testFolder)]
+        imagePaths = [*testPaths]
+        return imagePaths
+    
     @staticmethod
     def getRelativePathsNb(folderPath):
         bccFolder = os.path.join(folderPath, "bcc")
