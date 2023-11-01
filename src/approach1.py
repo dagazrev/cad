@@ -15,16 +15,9 @@ class Approach1:
         pass
 
     def run(self):
-<<<<<<< HEAD
-        trainPaths, valPaths = self.utils.getImagePathsFromFoldersNb("train_nb", "val_nb")
-        storePath = "features/approach1/non_binary.csv"
-        storePath2 = "features/approach1/non_binary_val.csv"
-        for imagePath in trainPaths:
-=======
         trainPaths, valPaths = self.utils.getImagePathsFromFolders("train", "val")
         storePath = "features/approach1/validation.csv"
         for imagePath in valPaths:
->>>>>>> f54bc2404dd47f7a73485358cc7c232637ba4fe9
             image = self.utils.loadImage(imagePath)
             preprocessed = self.pre.preprocessApproach1(image)
             features = self.feat.extractFeaturesApproach1(preprocessed)
