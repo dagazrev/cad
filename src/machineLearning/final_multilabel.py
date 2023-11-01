@@ -1,5 +1,6 @@
 import pandas as pd
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.preprocessing import StandardScaler
 
 class final_multilabel:
 
@@ -17,9 +18,13 @@ class final_multilabel:
         self.labels = self.train['Label']
         self.test_data = self.test.iloc[:, 2:]
 
+        scaler = StandardScaler()
+        scaled_features = scaler.fit_transform(self.features)
+        scaled_test = scaler.transform(self.test_data)
+
         classifier = GradientBoostingClassifier(max_depth=10, n_estimators=200)
-        classifier.fit(self.features, self.labels)
-        predicted_classes = classifier.predict(self.test_data)
+        classifier.fit(scaled_features, self.labels)
+        predicted_classes = classifier.predict(scaled_test)
 
         # Save the predicted classes to a CSV file without a header
         pd.DataFrame(predicted_classes).to_csv(output_csv, header=False, index=False)
@@ -28,6 +33,6 @@ if __name__ == "__main__":
     train_data = "features/approach1/non_binary.csv"
     test_data = "features/approach1/multilabel_test_features.csv"
     app1 = final_multilabel()
-    app1.predicting(train_data=train_data, test_data=test_data, output_csv="multilabelPrediction.csv")
+    app1.predicting(train_data=train_data, test_data=test_data, output_csv="multilabelPrediction_.csv")
     
 
