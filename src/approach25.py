@@ -13,16 +13,16 @@ class Approach25:
     def __init__(self):
         pass
 
-    #def run(self):
-    #    trainPaths, valPaths = self.utils.getImagePathsFromFoldersNb("train_nb", "val_nb")
-    #    storePath = "features/approach25/non_binary_val.csv"
-    #    for imagePath in valPaths:
-    #        image = self.utils.loadImage(imagePath)
-    #        preprocessed, mask = self.pre.preprocessApproach25(image)
-    #        print(preprocessed.shape)
-    #        features = self.feat.extractFeaturesApproach25(preprocessed, mask)
-    #        label = self.utils.getLabel(imagePath)
-    #        self.utils.store(storePath,imagePath, label, features)
+    def runTest(self):
+        trainPaths, valPaths = self.utils.getImagePathsFromFoldersNb("train_nb", "val_nb")
+        storePath = "features/approach25/non_binary_val.csv"
+        for imagePath in valPaths:
+            image = self.utils.loadImage(imagePath)
+            preprocessed, mask = self.pre.preprocessApproach25(image)
+            print(preprocessed.shape)
+            features = self.feat.extractFeaturesApproach25(preprocessed, mask)
+            label = self.utils.getLabel(imagePath)
+            self.utils.store(storePath,imagePath, label, features)
 
     def run(self):
         testPaths = self.utils.getImagePathsFromTest("test_nb")
